@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard & Analitik Enterprise — Gajahmada Technology</title>
+  <meta name="description" content="Dashboard analitik data multi-tenant dan monitoring metrik proyek real-time Gajahmada Technology.">
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Penyesuaian agar Dashboard menyatu sempurna dengan website */
+    .dashboard-page-section {
+      background: #f8fafc;
+      padding: var(--space-8) 0 var(--space-16);
+    }
+    .dash-controls-bar {
+      background: #ffffff;
+      border: 1px solid var(--neutral-200);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .dash-pulse-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: #059669;
+      background: #ecfdf5;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      border: 1px solid #d1fae5;
+    }
+    .dash-pulse-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: dashPulse 2s infinite;
+    }
+    @keyframes dashPulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .dash-period-toggle {
+      display: inline-flex;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: var(--radius-md);
+      gap: 3px;
+    }
+    .dash-period-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 12px;
+      font-size: var(--text-xs);
+      font-weight: var(--font-medium);
+      color: var(--neutral-600);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-family: inherit;
+    }
+    .dash-period-btn.active {
+      background: #ffffff;
+      color: var(--neutral-900);
+      font-weight: var(--font-bold);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .dash-search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--neutral-200);
+      border-radius: var(--radius-md);
+      padding: 6px 12px;
+      width: 220px;
+    }
+    .dash-search-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: var(--text-xs);
+      width: 100%;
+      font-family: inherit;
+      color: var(--neutral-800);
+    }
+    .chart-metric-tags {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding-top: var(--space-4);
+      margin-top: var(--space-4);
+      border-top: 1px solid var(--neutral-100);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+    .chart-metric-item {
+      text-align: center;
+    }
+    .chart-metric-num {
+      font-size: var(--text-sm);
+      font-weight: var(--font-bold);
+      color: var(--neutral-900);
+    }
+    .chart-metric-lbl {
+      font-size: 11px;
+      color: var(--neutral-400);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVBAR (PERSIS DENGAN SELURUH WEBSITE) ========== -->
+  <nav class="navbar">
+    <div class="container flex-between">
+      <a href="index.html" class="navbar-brand">
+        <img src="assets/images/logo.png" alt="Gajahmada Tech" class="brand-logo">
+      </a>
+      <div class="nav-menu">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Beranda</a></li>
+          <li><a href="services.html" class="nav-link">Layanan</a></li>
+          <li><a href="solutions.html" class="nav-link">Solusi</a></li>
+          <li><a href="projects.html" class="nav-link">Proyek</a></li>
+          <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">Tentang</a></li>
+          <li><a href="contact.html" class="nav-link">Kontak</a></li>
+          <li><a href="login.html" class="nav-link nav-auth-link">Masuk</a></li>
+        </ul>
+        <a href="contact.html" class="btn btn-primary btn-sm nav-cta">Hubungi Kami
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+      <button class="menu-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== PAGE HEADER (FORMAT WEBSITE) ========== -->
+  <section class="page-header">
+    <div class="container">
+      <div class="section-tag fade-in" style="margin-bottom:var(--space-3);display:inline-block;">SOFTWARE ENGINEERING & ANALYTICS</div>
+      <h1 class="fade-in">Dashboard & Analitik Enterprise</h1>
+      <p class="fade-in">Pemantauan performa produk digital, metrik infrastruktur server, dan status pengerjaan proyek software engineering secara real-time.</p>
+      <div class="breadcrumb fade-in">
+        <a href="index.html">Beranda</a>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        <span>Dashboard</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== DASHBOARD CONTENT SECTION ========== -->
+  <section class="dashboard-page-section">
+    <div class="container">
+
+      <!-- TOP CONTROL & STATUS BAR -->
+      <div class="dash-controls-bar fade-in">
+        <div style="display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap;">
+          <div class="dash-pulse-badge">
+            <span class="dash-pulse-dot"></span>
+            Semua Sistem Operasional (99.98% Uptime)
+          </div>
+          <span style="font-size:var(--text-xs);color:var(--neutral-500);display:inline-flex;align-items:center;gap:5px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Live Data • AWS Node ap-southeast-1
+          </span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;">
+          <!-- Period Selector -->
+          <div class="dash-period-toggle">
+            <button class="dash-period-btn active" onclick="setPeriod(this, '6m')">6 Bulan</button>
+            <button class="dash-period-btn" onclick="setPeriod(this, '30d')">30 Hari</button>
+            <button class="dash-period-btn" onclick="setPeriod(this, '7d')">7 Hari</button>
+          </div>
+
+          <button onclick="exportDashboardSummary()" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:7px 12px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Unduh CSV
+          </button>
+
+          <a href="contact.html" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:7px 14px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+            Mulai Proyek
+          </a>
+        </div>
+      </div>
+
+      <!-- 4 KPI STAT CARDS (PROPORTIONAL 4-COL GRID) -->
+      <div class="dashboard-stats-grid fade-in" style="margin-bottom:var(--space-6);">
+        <!-- Card 1: Nilai Transaksi -->
+        <div class="dash-stat-card">
+          <div class="dash-stat-top">
+            <div class="dash-stat-icon blue">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <span class="dash-stat-tag positive" id="kpiTag1">+18.4% bln ini</span>
+          </div>
+          <div>
+            <div class="dash-stat-value" id="kpiValue1">Rp 2,45 M</div>
+            <div class="dash-stat-label">Total Nilai Kontrak & Transaksi</div>
+          </div>
+        </div>
+
+        <!-- Card 2: Proyek Aktif -->
+        <div class="dash-stat-card">
+          <div class="dash-stat-top">
+            <div class="dash-stat-icon orange">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <span class="dash-stat-tag positive" id="kpiTag2">8 Selesai minggu ini</span>
+          </div>
+          <div>
+            <div class="dash-stat-value" id="kpiValue2">38 Proyek</div>
+            <div class="dash-stat-label">Proyek Aktif dalam Pengerjaan</div>
+          </div>
+        </div>
+
+        <!-- Card 3: Request API Gateway -->
+        <div class="dash-stat-card">
+          <div class="dash-stat-top">
+            <div class="dash-stat-icon green">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <span class="dash-stat-tag positive" id="kpiTag3">99.98% Uptime</span>
+          </div>
+          <div>
+            <div class="dash-stat-value" id="kpiValue3">4.82 M</div>
+            <div class="dash-stat-label">Request API Gateway / Hari</div>
+          </div>
+        </div>
+
+        <!-- Card 4: Klien & Merchant -->
+        <div class="dash-stat-card">
+          <div class="dash-stat-top">
+            <div class="dash-stat-icon red">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <span class="dash-stat-tag positive" id="kpiTag4">+24 Klien baru</span>
+          </div>
+          <div>
+            <div class="dash-stat-value" id="kpiValue4">1.240 Klien</div>
+            <div class="dash-stat-label">Merchant & Enterprise Aktif</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS SECTION (2:1 PROPORTIONAL GRID) -->
+      <div class="dashboard-grid-2-1 fade-in" style="margin-bottom:var(--space-6);">
+        <!-- Main Line Chart Card -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div>
+              <h3 class="dash-card-title">Tren Trafik Sistem & Pertumbuhan Pendapatan</h3>
+              <p class="dash-card-subtitle" id="chartSubtitle">Performa analitik real-time selama 6 bulan terakhir.</p>
+            </div>
+            <span style="font-size:11px;font-weight:700;color:#10B981;background:#ecfdf5;padding:4px 10px;border-radius:999px;">
+              ● Streaming Live
+            </span>
+          </div>
+
+          <!-- SVG Interactive Line Chart -->
+          <div class="chart-container-box">
+            <svg class="svg-chart" viewBox="0 0 700 240" preserveAspectRatio="none" id="dashboardSvgChart">
+              <defs>
+                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#1685EB" stop-opacity="0.25" />
+                  <stop offset="100%" stop-color="#1685EB" stop-opacity="0.0" />
+                </linearGradient>
+                <linearGradient id="chartLine" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#F57C25" />
+                  <stop offset="50%" stop-color="#1685EB" />
+                  <stop offset="100%" stop-color="#10B981" />
+                </linearGradient>
+              </defs>
+              <!-- Grid Lines -->
+              <line x1="40" y1="30" x2="680" y2="30" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4,4" />
+              <line x1="40" y1="80" x2="680" y2="80" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4,4" />
+              <line x1="40" y1="130" x2="680" y2="130" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4,4" />
+              <line x1="40" y1="180" x2="680" y2="180" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4,4" />
+              <line x1="40" y1="210" x2="680" y2="210" stroke="#e2e8f0" stroke-width="1" />
+
+              <!-- Area Fill -->
+              <polygon id="svgChartArea" points="40,210 40,165 140,140 250,150 360,95 470,110 580,55 680,40 680,210" fill="url(#chartGradient)" />
+
+              <!-- Line Path -->
+              <polyline id="svgChartLine" points="40,165 140,140 250,150 360,95 470,110 580,55 680,40" fill="none" stroke="url(#chartLine)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+
+              <!-- Data Points with Pulse -->
+              <circle cx="40" cy="165" r="4.5" fill="#ffffff" stroke="#F57C25" stroke-width="3" />
+              <circle cx="140" cy="140" r="4.5" fill="#ffffff" stroke="#F57C25" stroke-width="3" />
+              <circle cx="250" cy="150" r="4.5" fill="#ffffff" stroke="#1685EB" stroke-width="3" />
+              <circle cx="360" cy="95" r="4.5" fill="#ffffff" stroke="#1685EB" stroke-width="3" />
+              <circle cx="470" cy="110" r="4.5" fill="#ffffff" stroke="#1685EB" stroke-width="3" />
+              <circle cx="580" cy="55" r="4.5" fill="#ffffff" stroke="#10B981" stroke-width="3" />
+              <circle cx="680" cy="40" r="5.5" fill="#10B981" stroke="#ffffff" stroke-width="3" />
+
+              <!-- Labels -->
+              <g id="svgChartLabels">
+                <text x="40" y="230" font-size="11" fill="#94a3b8" text-anchor="middle">Mei</text>
+                <text x="140" y="230" font-size="11" fill="#94a3b8" text-anchor="middle">Jun</text>
+                <text x="250" y="230" font-size="11" fill="#94a3b8" text-anchor="middle">Jul</text>
+                <text x="360" y="230" font-size="11" fill="#94a3b8" text-anchor="middle">Agu</text>
+                <text x="470" y="230" font-size="11" fill="#94a3b8" text-anchor="middle">Sep</text>
+                <text x="580" y="230" font-size="11" fill="#94a3b8" text-anchor="middle">Okt</text>
+                <text x="680" y="230" font-size="11" fill="#10b981" font-weight="bold" text-anchor="middle">Nov (Live)</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Bottom Metric Indicators -->
+          <div class="chart-metric-tags">
+            <div class="chart-metric-item">
+              <div class="chart-metric-num" style="color:#1685EB;">48 ms</div>
+              <div class="chart-metric-lbl">Avg. Latency</div>
+            </div>
+            <div class="chart-metric-item">
+              <div class="chart-metric-num" style="color:#10B981;">0.002%</div>
+              <div class="chart-metric-lbl">Error Rate</div>
+            </div>
+            <div class="chart-metric-item">
+              <div class="chart-metric-num" style="color:#F57C25;">14.2k req/s</div>
+              <div class="chart-metric-lbl">Throughput</div>
+            </div>
+            <div class="chart-metric-item">
+              <div class="chart-metric-num" style="color:#0f172a;">99.98%</div>
+              <div class="chart-metric-lbl">SLA Reliability</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Distribution Card -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div>
+              <h3 class="dash-card-title">Distribusi Layanan</h3>
+              <p class="dash-card-subtitle">Porsi pengerjaan berdasarkan pilar teknologi.</p>
+            </div>
+          </div>
+
+          <div class="distrib-list">
+            <div class="distrib-item">
+              <div class="distrib-item-header">
+                <span>Pengembangan Web</span>
+                <strong>42% (Rp 1.02 M)</strong>
+              </div>
+              <div class="distrib-bar-bg">
+                <div class="distrib-bar-fill" style="width: 42%; background: #1685EB;"></div>
+              </div>
+            </div>
+
+            <div class="distrib-item">
+              <div class="distrib-item-header">
+                <span>Aplikasi Mobile (Flutter / RN)</span>
+                <strong>28% (Rp 686 Jt)</strong>
+              </div>
+              <div class="distrib-bar-bg">
+                <div class="distrib-bar-fill" style="width: 28%; background: #F57C25;"></div>
+              </div>
+            </div>
+
+            <div class="distrib-item">
+              <div class="distrib-item-header">
+                <span>Platform SaaS & Cloud</span>
+                <strong>18% (Rp 441 Jt)</strong>
+              </div>
+              <div class="distrib-bar-bg">
+                <div class="distrib-bar-fill" style="width: 18%; background: #10B981;"></div>
+              </div>
+            </div>
+
+            <div class="distrib-item">
+              <div class="distrib-item-header">
+                <span>API, Backend & DevOps</span>
+                <strong>12% (Rp 294 Jt)</strong>
+              </div>
+              <div class="distrib-bar-bg">
+                <div class="distrib-bar-fill" style="width: 12%; background: #F0442E;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:var(--space-6);padding:var(--space-4);background:#f8fafc;border-radius:var(--radius-md);border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:11px;color:var(--neutral-500);text-transform:uppercase;font-weight:600;letter-spacing:0.05em;">Target Kuartal IV (Q4)</div>
+              <div style="font-size:var(--text-xs);color:var(--neutral-600);margin-top:2px;">Realisasi target engineering</div>
+            </div>
+            <strong style="font-size:var(--text-base);color:#10b981;">94.2% Tercapai</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- MIDDLE SECTION (TABLE & INFRASTRUCTURE MONITORING) -->
+      <div class="dashboard-grid-1-1 fade-in">
+        <!-- Active Projects Table -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div>
+              <h3 class="dash-card-title">Proyek & Deployment Terbaru</h3>
+              <p class="dash-card-subtitle">Milestone pengerjaan software & status release terkini.</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="dash-search-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="projectSearchInput" placeholder="Cari proyek / klien..." onkeyup="filterProjectsTable()">
+              </div>
+              <a href="projects.html" class="btn-link" style="font-size:var(--text-xs);white-space:nowrap;">Lihat Semua →</a>
+            </div>
+          </div>
+
+          <div class="dash-table-wrapper">
+            <table class="dash-table" id="dashboardProjectsTable">
+              <thead>
+                <tr>
+                  <th>Nama Proyek</th>
+                  <th>Klien</th>
+                  <th>Progress</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardTableBody">
+                <tr>
+                  <td>
+                    <div class="project-meta-cell">
+                      <div class="project-icon-box" style="background:#eff6ff;color:#1685EB;">🛒</div>
+                      <div>
+                        <strong style="color:var(--neutral-900);">E-Commerce Marketplace</strong>
+                        <div style="font-size:11px;color:var(--neutral-400);">Next.js + PostgreSQL</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>PT. Digital Commerce</td>
+                  <td>
+                    <span class="mini-prog-bar"><span class="mini-prog-fill" style="width:94%;"></span></span>
+                    <span style="font-size:11px;font-weight:600;">94%</span>
+                  </td>
+                  <td><span class="badge-status live">● Production</span></td>
+                  <td><a href="project-ecommerce.html" class="btn btn-secondary btn-sm" style="padding:3px 8px;font-size:11px;">Detail</a></td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="project-meta-cell">
+                      <div class="project-icon-box" style="background:#fff7ed;color:#ea580c;">📱</div>
+                      <div>
+                        <strong style="color:var(--neutral-900);">Aplikasi Kesehatan</strong>
+                        <div style="font-size:11px;color:var(--neutral-400);">Flutter + Firebase</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>RS. Sehat Sejahtera</td>
+                  <td>
+                    <span class="mini-prog-bar"><span class="mini-prog-fill" style="width:100%;background:#10B981;"></span></span>
+                    <span style="font-size:11px;font-weight:600;">100%</span>
+                  </td>
+                  <td><span class="badge-status completed">✓ Selesai</span></td>
+                  <td><a href="project-healthcare.html" class="btn btn-secondary btn-sm" style="padding:3px 8px;font-size:11px;">Detail</a></td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="project-meta-cell">
+                      <div class="project-icon-box" style="background:#fef2f2;color:#dc2626;">🏦</div>
+                      <div>
+                        <strong style="color:var(--neutral-900);">API Gateway Perbankan</strong>
+                        <div style="font-size:11px;color:var(--neutral-400);">Kong + Node.js + mTLS</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>Bank Digital Nusantara</td>
+                  <td>
+                    <span class="mini-prog-bar"><span class="mini-prog-fill" style="width:78%;background:#F0442E;"></span></span>
+                    <span style="font-size:11px;font-weight:600;">78%</span>
+                  </td>
+                  <td><span class="badge-status testing">⚡ Audit OJK</span></td>
+                  <td><a href="project-banking.html" class="btn btn-secondary btn-sm" style="padding:3px 8px;font-size:11px;">Detail</a></td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="project-meta-cell">
+                      <div class="project-icon-box" style="background:#ecfdf5;color:#059669;">🚚</div>
+                      <div>
+                        <strong style="color:var(--neutral-900);">Manajemen Armada IoT</strong>
+                        <div style="font-size:11px;color:var(--neutral-400);">React Native + AWS IoT</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>PT. Logistik Cepat</td>
+                  <td>
+                    <span class="mini-prog-bar"><span class="mini-prog-fill" style="width:86%;background:#10B981;"></span></span>
+                    <span style="font-size:11px;font-weight:600;">86%</span>
+                  </td>
+                  <td><span class="badge-status active">● Testing Rute</span></td>
+                  <td><a href="project-fleet.html" class="btn btn-secondary btn-sm" style="padding:3px 8px;font-size:11px;">Detail</a></td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="project-meta-cell">
+                      <div class="project-icon-box" style="background:#f5f3ff;color:#7c3aed;">🏢</div>
+                      <div>
+                        <strong style="color:var(--neutral-900);">PropertyHub 360°</strong>
+                        <div style="font-size:11px;color:var(--neutral-400);">Next.js + Mapbox</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>PropertyHub Indonesia</td>
+                  <td>
+                    <span class="mini-prog-bar"><span class="mini-prog-fill" style="width:100%;background:#10B981;"></span></span>
+                    <span style="font-size:11px;font-weight:600;">100%</span>
+                  </td>
+                  <td><span class="badge-status completed">✓ Selesai</span></td>
+                  <td><a href="project-realestate.html" class="btn btn-secondary btn-sm" style="padding:3px 8px;font-size:11px;">Detail</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Server Health & Live Activities -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div>
+              <h3 class="dash-card-title">Kesehatan Infrastruktur Cloud</h3>
+              <p class="dash-card-subtitle">Node server AWS ap-southeast-1 & database cluster.</p>
+            </div>
+            <span class="dash-stat-tag positive">Normal</span>
+          </div>
+
+          <div class="server-grid">
+            <div class="server-item">
+              <div class="server-header">
+                <span class="server-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1685EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>
+                  Kubernetes Production Cluster
+                </span>
+                <span style="font-size:12px;font-weight:600;color:#1685EB;">CPU: 38% | RAM: 62%</span>
+              </div>
+              <div class="distrib-bar-bg">
+                <div class="distrib-bar-fill" style="width: 38%; background: #1685EB;"></div>
+              </div>
+            </div>
+
+            <div class="server-item">
+              <div class="server-header">
+                <span class="server-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+                  PostgreSQL Multi-AZ Cluster
+                </span>
+                <span style="font-size:12px;font-weight:600;color:#10B981;">Latency: 7ms | Hit: 99.4%</span>
+              </div>
+              <div class="distrib-bar-bg">
+                <div class="distrib-bar-fill" style="width: 24%; background: #10B981;"></div>
+              </div>
+            </div>
+
+            <div class="server-item">
+              <div class="server-header">
+                <span class="server-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F57C25" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+                  Redis Cache Cluster (Memory)
+                </span>
+                <span style="font-size:12px;font-weight:600;color:#F57C25;">Used: 4.2 GB / 16 GB</span>
+              </div>
+              <div class="distrib-bar-bg">
+                <div class="distrib-bar-fill" style="width: 26%; background: #F57C25;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Logs -->
+          <div style="margin-top:var(--space-6);">
+            <h4 style="font-size:var(--text-sm);font-weight:var(--font-semibold);margin-bottom:var(--space-3);color:var(--neutral-900);">Aktivitas Sistem Terkini</h4>
+            <div class="activity-feed">
+              <div class="activity-item">
+                <span class="activity-dot" style="background:#10B981;"></span>
+                <div>
+                  <div style="font-weight:500;color:var(--neutral-800);font-size:13px;">Deployment release v2.4.0 ke production berhasil</div>
+                  <div style="font-size:11px;color:var(--neutral-400);">14 menit yang lalu oleh CI/CD GitHub Actions</div>
+                </div>
+              </div>
+
+              <div class="activity-item">
+                <span class="activity-dot" style="background:#1685EB;"></span>
+                <div>
+                  <div style="font-weight:500;color:var(--neutral-800);font-size:13px;">Backup database harian selesai tanpa error</div>
+                  <div style="font-size:11px;color:var(--neutral-400);">1 jam yang lalu • Ukuran arsip: 18.4 GB</div>
+                </div>
+              </div>
+
+              <div class="activity-item">
+                <span class="activity-dot" style="background:#F57C25;"></span>
+                <div>
+                  <div style="font-weight:500;color:var(--neutral-800);font-size:13px;">Verifikasi sertifikat SSL & token mTLS perbankan diperbarui</div>
+                  <div style="font-size:11px;color:var(--neutral-400);">3 jam yang lalu • Status: Aktif Valid</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========== CTA SECTION (KONSISTEN DENGAN SELURUH WEBSITE) ========== -->
+  <section class="cta-section cta-gradient">
+    <div class="container">
+      <div class="cta-content fade-in">
+        <h2>Ingin Membangun Dashboard atau Platform SaaS Serupa?</h2>
+        <p>Konsultasikan kebutuhan arsitektur multi-tenant, visualisasi data analitik real-time, dan infrastruktur cloud Anda bersama tim engineer ahli kami.</p>
+        <div class="btn-group">
+          <a href="contact.html?service=saas" class="btn btn-primary btn-lg">Diskusikan Proyek Anda
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a href="project-saas.html" class="btn btn-ghost btn-lg">Pelajari Studi Kasus SaaS
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER (BACKGROUND PUTIH & LENGKAP) ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-col">
+          <a href="index.html" class="navbar-brand">
+            <img src="assets/images/logo.png" alt="Gajahmada Tech" class="brand-logo">
+          </a>
+          <p class="footer-brand-desc">Gajahmada Technology adalah perusahaan software engineering yang berfokus membangun produk digital inovatif untuk masa depan yang lebih baik.</p>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">Tautan Cepat</h4>
+          <div class="footer-links">
+            <a href="index.html" class="footer-link">Beranda</a>
+            <a href="services.html" class="footer-link">Layanan</a>
+            <a href="solutions.html" class="footer-link">Solusi</a>
+            <a href="projects.html" class="footer-link">Proyek</a>
+            <a href="dashboard.html" class="footer-link">Dashboard</a>
+            <a href="about.html" class="footer-link">Tentang</a>
+            <a href="contact.html" class="footer-link">Kontak</a>
+            <a href="login.html" class="footer-link footer-auth-link">Portal Masuk</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">Layanan Kami</h4>
+          <div class="footer-links">
+            <a href="services.html#web-development" class="footer-link">Pengembangan Web</a>
+            <a href="services.html#mobile-apps" class="footer-link">Aplikasi Mobile</a>
+            <a href="services.html#saas" class="footer-link">Pengembangan SaaS</a>
+            <a href="services.html#api-backend" class="footer-link">API & Backend</a>
+            <a href="services.html#cloud-devops" class="footer-link">Cloud & DevOps</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">Hubungi Kami</h4>
+          <div class="footer-contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <a href="mailto:hello@gajahmada.tech">hello@gajahmada.tech</a>
+          </div>
+          <div class="footer-contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <a href="tel:+6281231567890">+62 812 3156 7890</a>
+          </div>
+          <div class="footer-contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Pasuruan, Indonesia</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">&copy; 2026 Gajahmada Technology. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="https://linkedin.com" target="_blank" class="footer-social" aria-label="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="https://github.com" target="_blank" class="footer-social" aria-label="GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+          <a href="https://x.com" target="_blank" class="footer-social" aria-label="X">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="https://youtube.com" target="_blank" class="footer-social" aria-label="YouTube">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WhatsApp Float Button -->
+  <a href="https://wa.me/6281231567890" target="_blank" class="whatsapp-float" aria-label="Chat di WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-top" aria-label="Kembali ke atas">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+  </button>
+
+  <!-- CMS & SHARED SCRIPT -->
+  <script src="cms-data.js"></script>
+  <script src="script.js"></script>
+
+  <!-- DASHBOARD INTERACTIVE CONTROLLER -->
+  <script>
+    // 1. Dynamic Period Data Changer
+    const PERIOD_DATA = {
+      '6m': {
+        sub: 'Performa analitik real-time selama 6 bulan terakhir.',
+        kpi1: 'Rp 2,45 M', tag1: '+18.4% bln ini',
+        kpi2: '38 Proyek', tag2: '8 Selesai minggu ini',
+        kpi3: '4.82 M',   tag3: '99.98% Uptime',
+        kpi4: '1.240 Klien', tag4: '+24 Klien baru',
+        line: '40,165 140,140 250,150 360,95 470,110 580,55 680,40',
+        area: '40,210 40,165 140,140 250,150 360,95 470,110 580,55 680,40 680,210',
+        labels: ['Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov (Live)']
+      },
+      '30d': {
+        sub: 'Performa analitik harian selama 30 hari terakhir.',
+        kpi1: 'Rp 612 Jt', tag1: '+7.2% mgg ini',
+        kpi2: '14 Proyek', tag2: '3 Selesai kemarin',
+        kpi3: '1.18 M',   tag3: '99.99% Uptime',
+        kpi4: '312 Klien', tag4: '+9 Klien baru',
+        line: '40,180 140,130 250,110 360,120 470,80 580,60 680,35',
+        area: '40,210 40,180 140,130 250,110 360,120 470,80 580,60 680,35 680,210',
+        labels: ['Mgg 1', 'Mgg 2', 'Mgg 3', 'Mgg 4', 'Hari 26', 'Hari 28', 'Hari 30']
+      },
+      '7d': {
+        sub: 'Metrik live monitoring selama 7 hari terakhir.',
+        kpi1: 'Rp 148 Jt', tag1: '+3.1% hari ini',
+        kpi2: '6 Proyek',  tag2: 'Sesuai Timeline',
+        kpi3: '340 Rb',   tag3: '100% Uptime',
+        kpi4: '88 Klien',  tag4: '+3 Klien baru',
+        line: '40,150 140,160 250,120 360,140 470,90 580,70 680,50',
+        area: '40,210 40,150 140,160 250,120 360,140 470,90 580,70 680,50 680,210',
+        labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min (Hari Ini)']
+      }
+    };
+
+    function setPeriod(btn, periodKey) {
+      document.querySelectorAll('.dash-period-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const data = PERIOD_DATA[periodKey];
+      if (!data) return;
+
+      document.getElementById('chartSubtitle').textContent = data.sub;
+      document.getElementById('kpiValue1').textContent = data.kpi1;
+      document.getElementById('kpiTag1').textContent = data.tag1;
+      document.getElementById('kpiValue2').textContent = data.kpi2;
+      document.getElementById('kpiTag2').textContent = data.tag2;
+      document.getElementById('kpiValue3').textContent = data.kpi3;
+      document.getElementById('kpiTag3').textContent = data.tag3;
+      document.getElementById('kpiValue4').textContent = data.kpi4;
+      document.getElementById('kpiTag4').textContent = data.tag4;
+
+      // Animate line & area points
+      const lineEl = document.getElementById('svgChartLine');
+      const areaEl = document.getElementById('svgChartArea');
+      lineEl.style.transition = 'all 0.5s ease';
+      areaEl.style.transition = 'all 0.5s ease';
+      lineEl.setAttribute('points', data.line);
+      areaEl.setAttribute('points', data.area);
+
+      // Update labels
+      const labelGroup = document.getElementById('svgChartLabels');
+      const coords = [40, 140, 250, 360, 470, 580, 680];
+      labelGroup.innerHTML = data.labels.map((lbl, idx) => {
+        const isLast = idx === data.labels.length - 1;
+        return `<text x="${coords[idx]}" y="230" font-size="11" fill="${isLast ? '#10b981' : '#94a3b8'}" ${isLast ? 'font-weight="bold"' : ''} text-anchor="middle">${lbl}</text>`;
+      }).join('');
+    }
+
+    // 2. Real-time Project Search in Dashboard Table
+    function filterProjectsTable() {
+      const q = document.getElementById('projectSearchInput').value.toLowerCase().trim();
+      const rows = document.querySelectorAll('#dashboardTableBody tr');
+      rows.forEach(r => {
+        const text = r.textContent.toLowerCase();
+        r.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    // 3. Export Summary CSV
+    function exportDashboardSummary() {
+      const csvContent = 
+        "Metrik,Nilai,Status\n" +
+        "Total Nilai Kontrak,Rp 2.45 M,+18.4% bln ini\n" +
+        "Proyek Aktif,38 Proyek,8 Selesai minggu ini\n" +
+        "API Gateway Requests,4.82 M / Hari,99.98% Uptime SLA\n" +
+        "Klien Enterprise,1240 Klien,+24 Baru\n" +
+        "Pengembangan Web,42%,Rp 1.02 M\n" +
+        "Aplikasi Mobile,28%,Rp 686 Jt\n" +
+        "Platform SaaS,18%,Rp 441 Jt\n" +
+        "Cloud & DevOps,12%,Rp 294 Jt\n" +
+        "Server Cluster Status,Kubernetes Production,Normal (CPU 38% | RAM 62%)\n" +
+        "Database Multi-AZ,PostgreSQL AWS,Latency 7ms | Cache 99.4%\n";
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', `ringkasan-dashboard-gmt-${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masuk — Portal Gajahmada Technology</title>
+  <meta name="description" content="Halaman login akses terpisah untuk Administrator dan Klien/Customer Gajahmada Technology.">
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .login-page {
+      min-height: 100vh;
+      background: radial-gradient(circle at top right, rgba(22, 133, 235, 0.08), transparent 40%),
+                  radial-gradient(circle at bottom left, rgba(240, 68, 46, 0.08), transparent 40%),
+                  #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: var(--font-primary);
+    }
+    .login-container {
+      max-width: 460px;
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.02);
+      overflow: hidden;
+    }
+    .login-header {
+      padding: 32px 32px 24px;
+      text-align: center;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .role-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #f1f5f9;
+      padding: 4px;
+      margin: 20px 32px 0;
+      border-radius: 12px;
+    }
+    .role-tab-btn {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .role-tab-btn.active {
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
+    .role-tab-btn.active.admin-tab {
+      color: #dc2626;
+    }
+    .role-tab-btn.active.customer-tab {
+      color: #1685EB;
+    }
+    .login-body {
+      padding: 24px 32px 32px;
+    }
+    .role-badge-notice {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+    .role-badge-notice.admin {
+      background: #fef2f2;
+      border: 1px solid #fee2e2;
+      color: #991b1b;
+    }
+    .role-badge-notice.customer {
+      background: #eff6ff;
+      border: 1px solid #dbeafe;
+      color: #1e40af;
+    }
+    .form-group-login {
+      margin-bottom: 18px;
+    }
+    .form-group-login label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+    .input-login {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 14px;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-login:focus {
+      border-color: #1685EB;
+      box-shadow: 0 0 0 3px rgba(22, 133, 235, 0.12);
+    }
+    .btn-submit-login {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-submit-login.admin-btn {
+      background: #F0442E;
+    }
+    .btn-submit-login.admin-btn:hover {
+      background: #d73824;
+      transform: translateY(-1px);
+    }
+    .btn-submit-login.customer-btn {
+      background: #1685EB;
+    }
+    .btn-submit-login.customer-btn:hover {
+      background: #1170c9;
+      transform: translateY(-1px);
+    }
+    .quick-login-card {
+      margin-top: 20px;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      font-size: 12px;
+      color: #475569;
+    }
+    .quick-btn {
+      margin-top: 8px;
+      width: 100%;
+      padding: 7px 10px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #334155;
+      transition: background 0.2s;
+    }
+    .quick-btn:hover {
+      background: #f1f5f9;
+    }
+    .error-alert {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fee2e2;
+      color: #b91c1c;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body class="login-page">
+
+  <div class="login-container">
+    <div class="login-header">
+      <a href="index.html" style="display:inline-block;margin-bottom:14px;">
+        <img src="assets/images/logo.png" alt="Gajahmada Tech" style="height:38px;">
+      </a>
+      <h2 style="font-size:20px;font-weight:700;margin:0 0 6px;color:#0f172a;">Gerbang Akses Masuk</h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">Silakan pilih peran Anda untuk masuk ke sistem.</p>
+    </div>
+
+    <!-- ROLE TABS (ADMIN vs CUSTOMER) -->
+    <div class="role-tabs">
+      <button type="button" class="role-tab-btn active admin-tab" id="tabAdminBtn" onclick="selectRole('admin')">
+        🛡️ Akses Admin
+      </button>
+      <button type="button" class="role-tab-btn customer-tab" id="tabCustomerBtn" onclick="selectRole('customer')">
+        👤 Portal Klien (Customer)
+      </button>
+    </div>
+
+    <div class="login-body">
+      <!-- Error Alert -->
+      <div class="error-alert" id="errorAlert"></div>
+
+      <!-- Notice for Admin -->
+      <div class="role-badge-notice admin" id="adminNotice">
+        <span>🔒</span>
+        <div><strong>Hanya untuk Admin:</strong> Akses penuh ke Content Management System (CMS), edit proyek, layanan, CRM, dan pengaturan web.</div>
+      </div>
+
+      <!-- Notice for Customer -->
+      <div class="role-badge-notice customer" id="customerNotice" style="display:none;">
+        <span>💼</span>
+        <div><strong>Portal Klien:</strong> Akses untuk pemilik proyek dan customer guna memantau progres proyek, riwayat konsultasi, dan pengajuan brief.</div>
+      </div>
+
+      <form id="loginForm">
+        <input type="hidden" id="selectedRole" value="admin">
+
+        <div class="form-group-login">
+          <label id="labelEmail">Email / Username Admin</label>
+          <input type="text" id="loginEmail" class="input-login" placeholder="admin@gajahmada.tech" required value="admin@gajahmada.tech">
+        </div>
+
+        <div class="form-group-login">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label style="margin:0;">Kata Sandi (Password)</label>
+            <span id="hintPass" style="font-size:11px;color:#64748b;font-weight:600;">Default: admin123</span>
+          </div>
+          <div style="position:relative;">
+            <input type="password" id="loginPass" class="input-login" placeholder="••••••••" required value="admin123">
+            <button type="button" onclick="togglePassword()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:14px;">👁️</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit-login admin-btn" id="btnSubmit">
+          Masuk sebagai Admin →
+        </button>
+      </form>
+
+      <!-- Quick 1-Click Login Helper for Testing -->
+      <div class="quick-login-card">
+        <strong style="display:block;margin-bottom:4px;">💡 Tombol Cepat Masuk Langsung:</strong>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">
+          <button type="button" class="quick-btn" onclick="quickLogin('admin')" style="color:#dc2626;">
+            🛡️ Masuk Langsung (Admin)
+          </button>
+          <button type="button" class="quick-btn" onclick="quickLogin('customer')" style="color:#1685EB;">
+            👤 Masuk Langsung (Klien)
+          </button>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:20px;">
+        <a href="index.html" style="font-size:13px;color:#64748b;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          ← Kembali ke Website Utama
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="cms-data.js"></script>
+  <script>
+    let currentRole = 'admin';
+
+    function selectRole(role) {
+      currentRole = role;
+      document.getElementById('selectedRole').value = role;
+
+      const adminTab = document.getElementById('tabAdminBtn');
+      const customerTab = document.getElementById('tabCustomerBtn');
+      const adminNotice = document.getElementById('adminNotice');
+      const customerNotice = document.getElementById('customerNotice');
+      const labelEmail = document.getElementById('labelEmail');
+      const inputEmail = document.getElementById('loginEmail');
+      const inputPass = document.getElementById('loginPass');
+      const hintPass = document.getElementById('hintPass');
+      const btnSubmit = document.getElementById('btnSubmit');
+
+      if (role === 'admin') {
+        adminTab.classList.add('active');
+        customerTab.classList.remove('active');
+        adminNotice.style.display = 'flex';
+        customerNotice.style.display = 'none';
+        labelEmail.textContent = 'Email / Username Admin';
+        inputEmail.placeholder = 'admin@gajahmada.tech';
+        inputEmail.value = 'admin@gajahmada.tech';
+        inputPass.value = 'admin123';
+        hintPass.textContent = 'Default: admin123';
+        btnSubmit.className = 'btn-submit-login admin-btn';
+        btnSubmit.textContent = 'Masuk sebagai Admin →';
+      } else {
+        customerTab.classList.add('active');
+        adminTab.classList.remove('active');
+        adminNotice.style.display = 'none';
+        customerNotice.style.display = 'flex';
+        labelEmail.textContent = 'Email Klien / Customer';
+        inputEmail.placeholder = 'klien@perusahaan.com';
+        inputEmail.value = 'klien@perusahaan.com';
+        inputPass.value = 'klien123';
+        hintPass.textContent = 'Default: klien123';
+        btnSubmit.className = 'btn-submit-login customer-btn';
+        btnSubmit.textContent = 'Masuk ke Portal Klien →';
+      }
+      hideError();
+    }
+
+    function togglePassword() {
+      const p = document.getElementById('loginPass');
+      p.type = p.type === 'password' ? 'text' : 'password';
+    }
+
+    function showError(msg) {
+      const err = document.getElementById('errorAlert');
+      err.textContent = msg;
+      err.style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('errorAlert').style.display = 'none';
+    }
+
+    function quickLogin(role) {
+      selectRole(role);
+      document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      hideError();
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
+      const role = document.getElementById('selectedRole').value;
+
+      const result = CMS.login(email, pass, role);
+
+      if (result.success) {
+        // Redirect based on role or URL param
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectParam = urlParams.get('redirect');
+        
+        if (role === 'admin') {
+          window.location.href = redirectParam || 'admin.html';
+        } else {
+          window.location.href = 'customer.html';
+        }
+      } else {
+        showError(result.message || 'Email atau password salah!');
+      }
+    });
+
+    // Check if role preselected in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('role') === 'customer') {
+      selectRole('customer');
+    }
+
+    // Tampilkan notifikasi jika sudah ada sesi yang aktif
+    const existingUser = CMS.getCurrentUser();
+    if (existingUser) {
+      const banner = document.createElement('div');
+      banner.style.cssText = 'background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;';
+      banner.innerHTML = `
+        <span>ℹ️ Anda saat ini masuk sebagai <strong>${existingUser.name}</strong> (${existingUser.role === 'admin' ? '🛡️ Administrator' : '👤 Klien'}).</span>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <a href="${existingUser.role === 'admin' ? 'admin.html' : 'customer.html'}" style="color:#166534;font-weight:700;text-decoration:underline;">Buka Portal →</a>
+          <a href="#" onclick="CMS.logout();location.reload();" style="color:#dc2626;font-size:12px;text-decoration:underline;">Keluar Akun</a>
+        </div>
+      `;
+      document.querySelector('.login-body').prepend(banner);
+    }
+  </script>
+</body>
+</html>
